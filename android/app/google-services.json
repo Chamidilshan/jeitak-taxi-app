@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "126356965128",
+    "project_id": "jeitak-app",
+    "storage_bucket": "jeitak-app.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:126356965128:android:42261159f81803e0530ebd",
+        "android_client_info": {
+          "package_name": "com.example.jeitak_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "126356965128-3ppdb5718cc55utl9e1e9cap61jk39uj.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCpIIQv66j9ELjcs8J3sNEg8U3vo2XYL3U"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "126356965128-3ppdb5718cc55utl9e1e9cap61jk39uj.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

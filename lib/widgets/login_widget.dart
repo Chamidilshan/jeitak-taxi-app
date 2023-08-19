@@ -74,11 +74,12 @@ Widget loginWidget(CountryCode countryCode, Function onCountryChange,Function on
                   child: TextField(
                     keyboardType: TextInputType.number,
                     onEditingComplete: () {
-                      Get.to(
-                              ()=>OtpVerificationScreen()
-                      );
+                      // Get.to(
+                      //         ()=>OtpVerificationScreen()
+                      // );
                     },
-                    //onSubmitted: (String? input)=> onSubmit(input),
+                    onSubmitted: (String? input)=>
+                        onSubmit(input),
 
                     //
                     decoration: InputDecoration(
@@ -100,7 +101,7 @@ Widget loginWidget(CountryCode countryCode, Function onCountryChange,Function on
           children: [
             TextButton(
               onPressed: () {
-                Get.to(() => OtpVerificationScreen());
+                //Get.to(() => OtpVerificationScreen());
               },
               child: Text(
                   'Send OTP Code',
