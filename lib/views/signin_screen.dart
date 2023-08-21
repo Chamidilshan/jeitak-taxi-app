@@ -4,11 +4,16 @@ import 'package:jeitak_app/utils/colors.dart';
 import 'package:jeitak_app/utils/constants.dart';
 import 'package:jeitak_app/views/home_page.dart';
 import 'package:jeitak_app/views/login_screen.dart';
+import 'package:jeitak_app/views/register_page.dart';
 import 'package:jeitak_app/widgets/green_into_widget.dart';
 import 'package:jeitak_app/widgets/text_widget.dart';
 
 class SignInScreen extends StatefulWidget {
-  const SignInScreen({Key? key}) : super(key: key);
+  final Function()? onTap;
+  SignInScreen({
+    Key? key,
+    required this.onTap
+  }) : super(key: key);
 
   @override
   State<SignInScreen> createState() => _SignInScreenState();
@@ -203,9 +208,20 @@ class _SignInScreenState extends State<SignInScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
                   Text("Don't have an account?"),
-                  Text(" Sign up", style: TextStyle(
-                      fontWeight: FontWeight.w600, fontSize: 18
-                  ),),
+                  GestureDetector(
+                    child: Text(" Sign up", style: TextStyle(
+                        fontWeight: FontWeight.w600, fontSize: 18
+                    ),
+                    ),
+                    onTap: (){
+                      widget.onTap;
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context)=> RegisterPage(onTap: (){}))
+                      );
+                      print('prssed');
+                    },
+                  ),
                 ],
               ),
                   ],

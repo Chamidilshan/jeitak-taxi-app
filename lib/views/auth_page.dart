@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:jeitak_app/views/home_page.dart';
+import 'package:jeitak_app/views/login_or_register.dart';
 import 'package:jeitak_app/views/login_screen.dart';
+import 'package:jeitak_app/views/profile_setting_screen.dart';
 import 'package:jeitak_app/views/signin_screen.dart';
 
 class AuthPage extends StatelessWidget {
@@ -14,9 +16,9 @@ class AuthPage extends StatelessWidget {
         stream: FirebaseAuth.instance.authStateChanges(),
         builder: (context, snapshot){
           if(snapshot.hasData){
-            return HomeScreen();
+            return ProfileScreen();
           } else{
-            return SignInScreen();
+            return LoginOrRegisterPage();
           }
         },
       ),
