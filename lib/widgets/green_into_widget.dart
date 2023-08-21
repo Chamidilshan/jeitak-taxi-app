@@ -8,7 +8,7 @@ Widget greenIntroWidget(){
     width: Get.width,
     decoration: BoxDecoration(
         image: DecorationImage(
-            image: AssetImage('assets/mask.png'),
+            image: AssetImage('assets/jeitak.png'),
             fit: BoxFit.cover
         )
     ),
@@ -18,13 +18,13 @@ Widget greenIntroWidget(){
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
 
-        SvgPicture.asset('assets/leaf icon.svg'),
+        //SvgPicture.asset('assets/leaf icon.svg'),
 
         const SizedBox(
           height: 20,
         ),
 
-        SvgPicture.asset('assets/greenTaxi.svg')
+       //Image.asset('assets/jeitak.png')
 
       ],
     ),

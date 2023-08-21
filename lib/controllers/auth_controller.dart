@@ -13,6 +13,7 @@ class AuthController extends GetxController{
 
   var isDecided = false;
   var isProfileUploading = false.obs;
+  // var myUser = UserModel().obs;
 
 
   decideRoute() {
