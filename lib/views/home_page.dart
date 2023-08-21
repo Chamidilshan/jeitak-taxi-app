@@ -12,6 +12,7 @@ import 'package:flutter/services.dart' show rootBundle;
 import 'package:google_places_flutter/google_places_flutter.dart';
 import 'package:jeitak_app/views/my_profile_screen.dart';
 import 'package:geocoding/geocoding.dart' as geoCoding;
+import 'dart:ui' as ui;
 
 class HomeScreen extends StatefulWidget {
    HomeScreen({Key? key}) : super(key: key);
@@ -51,6 +52,7 @@ class _HomeScreenState extends State<HomeScreen> {
     rootBundle.loadString('assets/map_styles.txt').then((string) {
       _mapStyle = string;
     });
+    loadCustomMarker();
   }
 
   void signOutUser(){
@@ -235,7 +237,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 title: 'Destination: $controller.text',
               ),
               position: destination,
-              //icon: BitmapDescriptor.fromBytes(markIcons),
+              icon: BitmapDescriptor.fromBytes(markIcons),
             ));
 
             myMapController!.animateCamera(CameraUpdate.newCameraPosition(
@@ -818,6 +820,22 @@ class _HomeScreenState extends State<HomeScreen> {
         ],
       ),
     );
+  }
+
+  late Uint8List markIcons;
+
+  loadCustomMarker() async {
+    markIcons = await loadAsset('assets/dest_marker.png', 100);
+  }
+
+  Future<Uint8List> loadAsset(String path, int width) async {
+    ByteData data = await rootBundle.load(path);
+    ui.Codec codec = await ui.instantiateImageCodec(data.buffer.asUint8List(),
+        targetHeight: width);
+    ui.FrameInfo fi = await codec.getNextFrame();
+    return (await fi.image.toByteData(format: ui.ImageByteFormat.png))!
+        .buffer
+        .asUint8List();
   }
 
   buildDrawerItem(
