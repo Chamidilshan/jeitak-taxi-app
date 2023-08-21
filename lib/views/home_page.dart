@@ -1,6 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:get/get_state_manager/src/rx_flutter/rx_obx_widget.dart';
@@ -12,6 +11,7 @@ import 'package:jeitak_app/utils/colors.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:google_places_flutter/google_places_flutter.dart';
 import 'package:jeitak_app/views/my_profile_screen.dart';
+import 'package:geocoding/geocoding.dart' as geoCoding;
 
 class HomeScreen extends StatefulWidget {
    HomeScreen({Key? key}) : super(key: key);
@@ -26,6 +26,11 @@ class _HomeScreenState extends State<HomeScreen> {
   String? _mapStyle;
   GoogleMapController? myMapController;
   final TextEditingController controller = TextEditingController();
+
+  late LatLng destination;
+  late LatLng source;
+
+  Set<Marker> markers = Set<Marker>();
 
   final  CameraPosition _kGooglePlex = CameraPosition(
     target: LatLng(37.42796133580664, -122.085749655962),
@@ -74,6 +79,7 @@ class _HomeScreenState extends State<HomeScreen> {
             child: GoogleMap(
               // mapType: MapType.terrain,
               zoomControlsEnabled: false,
+              markers: markers,
               onMapCreated: (GoogleMapController controller) {
                 myMapController = controller;
                 myMapController!.setMapStyle(_mapStyle);
@@ -199,7 +205,7 @@ class _HomeScreenState extends State<HomeScreen> {
           textEditingController: controller,
           googleAPIKey: "AIzaSyAvgoLt-borSsoJ4NTTHFnDjcOLAr84i2k",
           debounceTime: 800,
-          countries: ["in", "fr"],
+          countries: ["in", "fr", "sa", "lk"],
           isLatLngRequired: true,
           getPlaceDetailWithLatLng: (Prediction prediction) {
             print("placeDetails " + prediction.lng.toString());
@@ -207,11 +213,37 @@ class _HomeScreenState extends State<HomeScreen> {
               showSourceField = true;
             });
           },
-          itemClick: (Prediction prediction) {
+          itemClick: (Prediction prediction) async{
             controller.text = prediction.description ?? "";
             controller.selection = TextSelection.fromPosition(
               TextPosition(offset: prediction.description!.length),
             );
+
+            //  String selectedPlace = p!.description!;
+            // //
+            // geoCoding.Location selectedPlace = controller.text;
+
+            List<geoCoding.Location> locations =
+                await geoCoding.locationFromAddress(controller.text);
+
+            destination =
+                LatLng(locations.first.latitude, locations.first.longitude);
+
+            markers.add(Marker(
+              markerId: MarkerId(controller.text),
+              infoWindow: InfoWindow(
+                title: 'Destination: $controller.text',
+              ),
+              position: destination,
+              //icon: BitmapDescriptor.fromBytes(markIcons),
+            ));
+
+            myMapController!.animateCamera(CameraUpdate.newCameraPosition(
+                CameraPosition(target: destination, zoom: 14)
+              //17 is new zoom level
+            ));
+
+
             setState(() {
               showSourceField = true;
             });
@@ -734,7 +766,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 buildDrawerItem(title: 'Log Out', onPressed: () {
 
                   FirebaseAuth.instance.signOut();
-
+                  signOutUser();
                 }),
               ],
             ),
