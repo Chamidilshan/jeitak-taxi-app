@@ -5,6 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:jeitak_app/models/user_model.dart';
 import 'package:jeitak_app/views/home_page.dart';
 import 'package:jeitak_app/views/profile_setting_screen.dart';
 import 'package:path/path.dart' as Path;
@@ -85,24 +86,26 @@ class AuthController extends GetxController{
     return imageUrl;
   }
 
+  var myUser = UserModel().obs;
+
   storeUserInfo(
       File? selectedImage,
       String name,
       String home,
       String business,
       String shop ,
-      // {
-      //   String url = '',
-      //   // LatLng? homeLatLng,
-      //   // LatLng? businessLatLng,
-      //   // LatLng? shoppingLatLng,
-      // }
+      {
+        String url = '',
+        // LatLng? homeLatLng,
+        // LatLng? businessLatLng,
+        // LatLng? shoppingLatLng,
+      }
       ) async {
     String url = await uploadImage(selectedImage!);
-    // String url_new = url;
-    // if (selectedImage != null) {
-    //   url_new = await uploadImage(selectedImage);
-    // }
+    String url_new = url;
+    if (selectedImage != null) {
+      url_new = await uploadImage(selectedImage);
+    }
     String uid = FirebaseAuth.instance.currentUser!.uid;
     FirebaseFirestore.instance.collection('users').doc(uid).set({
       'image': url,
@@ -121,6 +124,43 @@ class AuthController extends GetxController{
       Get.to(() => HomeScreen());
     });
   }
+
+
+  getUserInfo() {
+    String uid = FirebaseAuth.instance.currentUser!.uid;
+    FirebaseFirestore.instance
+        .collection('users')
+        .doc(uid)
+        .snapshots()
+        .listen((event) {
+      myUser.value = UserModel.fromJson(event.data()!);
+    });
+  }
+
+  // Future<Prediction?> showGoogleAutoComplete(BuildContext context) async {
+  //   Prediction? p = await PlacesAutocomplete.show(
+  //     offset: 0,
+  //     radius: 1000,
+  //     strictbounds: false,
+  //     region: "pk",
+  //     language: "en",
+  //     context: context,
+  //     mode: Mode.overlay,
+  //     apiKey: AppConstants.kGoogleApiKey,
+  //     components: [new Component(Component.country, "pk")],
+  //     types: [],
+  //     hint: "Search City",
+  //   );
+  //
+  //   return p;
+  // }
+  //
+  // Future<LatLng> buildLatLngFromAddress(String place) async {
+  //   List<geoCoding.Location> locations =
+  //   await geoCoding.locationFromAddress(place);
+  //   return LatLng(locations.first.latitude, locations.first.longitude);
+  // }
+
 
 
 
