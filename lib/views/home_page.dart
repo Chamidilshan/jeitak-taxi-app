@@ -17,6 +17,8 @@ import 'package:jeitak_app/views/my_profile_screen.dart';
 import 'package:geocoding/geocoding.dart' as geoCoding;
 import 'dart:ui' as ui;
 
+import 'package:jeitak_app/widgets/text_widget.dart';
+
 class HomeScreen extends StatefulWidget {
    HomeScreen({Key? key}) : super(key: key);
 
@@ -38,7 +40,7 @@ class _HomeScreenState extends State<HomeScreen> {
   final Set<Polyline> _polyline = {};
   Set<Marker> markers = Set<Marker>();
 
-  final  CameraPosition _kGooglePlex = CameraPosition(
+  final CameraPosition _kGooglePlex = CameraPosition(
     target: LatLng(37.42796133580664, -122.085749655962),
     zoom: 14.4746,
   );
@@ -50,6 +52,15 @@ class _HomeScreenState extends State<HomeScreen> {
       zoom: 19.151926040649414
   );
 
+  List<String> list = <String>[
+    '**** **** **** 8789',
+    '**** **** **** 8921',
+    '**** **** **** 1233',
+    '**** **** **** 4352'
+  ];
+
+  String dropdownValue = '**** **** **** 8789';
+
   @override
   void initState() {
     super.initState();
@@ -60,7 +71,7 @@ class _HomeScreenState extends State<HomeScreen> {
     loadCustomMarker();
   }
 
-  void signOutUser(){
+  void signOutUser() {
     FirebaseAuth.instance.signOut();
   }
 
@@ -92,7 +103,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 myMapController = controller;
                 myMapController!.setMapStyle(_mapStyle);
                 // _controller.complete(controller);
-              }, initialCameraPosition: _kGooglePlex,
+              },
+              initialCameraPosition: _kGooglePlex,
             ),
           ),
 
@@ -120,7 +132,8 @@ class _HomeScreenState extends State<HomeScreen> {
       left: 0,
       right: 0,
       child:
-      Obx(() => authController.myUser.value.name == null
+      Obx(() =>
+      authController.myUser.value.name == null
           ? Center(
         child: CircularProgressIndicator(),
       )
@@ -149,7 +162,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       image: NetworkImage(
                           authController.myUser.value.image!),
                       fit: BoxFit.fill)
-                ),
+              ),
             ),
             const SizedBox(
               width: 15,
@@ -166,7 +179,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         TextStyle(color: Colors.black, fontSize: 14)),
                     TextSpan(
                         text: authController.myUser.value.name,
-                      // text: 'Mark',
+                        // text: 'Mark',
                         style: TextStyle(
                             color: AppColors.mainColor,
                             fontSize: 16,
@@ -185,7 +198,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ],
         ),
       )
-    ),
+      ),
     );
   }
 
@@ -222,7 +235,7 @@ class _HomeScreenState extends State<HomeScreen> {
               showSourceField = true;
             });
           },
-          itemClick: (Prediction prediction) async{
+          itemClick: (Prediction prediction) async {
             controller.text = prediction.description ?? "";
             controller.selection = TextSelection.fromPosition(
               TextPosition(offset: prediction.description!.length),
@@ -233,7 +246,7 @@ class _HomeScreenState extends State<HomeScreen> {
             // geoCoding.Location selectedPlace = controller.text;
 
             List<geoCoding.Location> locations =
-                await geoCoding.locationFromAddress(controller.text);
+            await geoCoding.locationFromAddress(controller.text);
 
             destination =
                 LatLng(locations.first.latitude, locations.first.longitude);
@@ -320,6 +333,182 @@ class _HomeScreenState extends State<HomeScreen> {
             border: InputBorder.none,
           ),
         ),
+      ),
+    );
+  }
+  buildRideConfirmationSheet() {
+    Get.bottomSheet(Container(
+      width: Get.width,
+      height: Get.height * 0.4,
+      padding: EdgeInsets.only(left: 20),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.only(
+            topRight: Radius.circular(12), topLeft: Radius.circular(12)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const SizedBox(
+            height: 10,
+          ),
+          Center(
+            child: Container(
+              width: Get.width * 0.2,
+              height: 8,
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(8), color: Colors.grey),
+            ),
+          ),
+          const SizedBox(
+            height: 20,
+          ),
+          textWidget(
+              text: 'Select an option:',
+              fontSize: 18,
+              fontWeight: FontWeight.bold),
+          const SizedBox(
+            height: 20,
+          ),
+          buildDriversList(),
+          const SizedBox(
+            height: 20,
+          ),
+          Padding(
+            padding: const EdgeInsets.only(right: 20),
+            child: Divider(),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(right: 20),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Expanded(child: buildPaymentCardWidget()),
+                MaterialButton(
+                  onPressed: () {},
+                  child: textWidget(
+                    text: 'Confirm',
+                    color: Colors.white,
+                  ),
+                  color: AppColors.mainColor,
+                  shape: StadiumBorder(),
+                )
+              ],
+            ),
+          )
+        ],
+      ),
+    ));
+  }
+
+  buildPaymentCardWidget() {
+    return Container(
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Image.asset(
+            'assets/visa.png',
+            width: 40,
+          ),
+          SizedBox(
+            width: 10,
+          ),
+          DropdownButton<String>(
+            value: dropdownValue,
+            icon: const Icon(Icons.keyboard_arrow_down),
+            elevation: 16,
+            style: const TextStyle(color: Colors.deepPurple),
+            underline: Container(),
+            onChanged: (String? value) {
+              // This is called when the user selects an item.
+              setState(() {
+                dropdownValue = value!;
+              });
+            },
+            items: list.map<DropdownMenuItem<String>>((String value) {
+              return DropdownMenuItem<String>(
+                value: value,
+                child: textWidget(text: value),
+              );
+            }).toList(),
+          )
+        ],
+      ),
+    );
+  }
+
+  int selectedRide = 0;
+
+  buildDriversList() {
+    return Container(
+      height: 90,
+      width: Get.width,
+      child: StatefulBuilder(builder: (context, set) {
+        return ListView.builder(
+          itemBuilder: (ctx, i) {
+            return InkWell(
+              onTap: () {
+                set(() {
+                  selectedRide = i;
+                });
+              },
+              child: buildDriverCard(selectedRide == i),
+            );
+          },
+          itemCount: 3,
+          scrollDirection: Axis.horizontal,
+        );
+      }),
+    );
+  }
+
+  buildDriverCard(bool selected) {
+    return Container(
+      margin: EdgeInsets.only(right: 8, left: 8, top: 4, bottom: 4),
+      height: 85,
+      width: 165,
+      decoration: BoxDecoration(
+          boxShadow: [
+            BoxShadow(
+                color: selected
+                    ? Color(0xff2DBB54).withOpacity(0.2)
+                    : Colors.grey.withOpacity(0.2),
+                offset: Offset(0, 5),
+                blurRadius: 5,
+                spreadRadius: 1)
+          ],
+          borderRadius: BorderRadius.circular(12),
+          color: selected ? AppColors.mainColor : Colors.grey),
+      child: Stack(
+        children: [
+          Container(
+            padding: EdgeInsets.only(left: 10, top: 10, bottom: 10, right: 10),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                textWidget(
+                    text: 'Standard',
+                    color: Colors.white,
+                    fontWeight: FontWeight.w700),
+                textWidget(
+                    text: '\$9.90',
+                    color: Colors.white,
+                    fontWeight: FontWeight.w500),
+                textWidget(
+                    text: '3 MIN',
+                    color: Colors.white.withOpacity(0.8),
+                    fontWeight: FontWeight.normal,
+                    fontSize: 12),
+              ],
+            ),
+          ),
+          Positioned(
+              right: -20,
+              top: 0,
+              bottom: 0,
+              child: Image.asset('assets/Mask Group 2.png'))
+        ],
       ),
     );
   }
@@ -535,7 +724,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   CameraPosition(target: source, zoom: 14)));
               setState(() {});
 
-              //buildRideConfirmationSheet();
+              buildRideConfirmationSheet();
             },
             child: Container(
               width: Get.width,
