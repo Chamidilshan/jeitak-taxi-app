@@ -3,6 +3,8 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:google_places_flutter/model/prediction.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:jeitak_app/controllers/auth_controller.dart';
 import 'package:jeitak_app/utils/colors.dart';
@@ -34,9 +36,11 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
     }
   }
 
-  // late LatLng homeAddress;
-  // late LatLng businessAddress;
-  // late LatLng shoppingAddress;
+  LatLng? homeAddress = LatLng(37.7749, -122.4194); // San Francisco, CA
+  LatLng? businessAddress = LatLng(34.0522, -118.2437); // Los Angeles, CA
+  LatLng? shoppingAddress = LatLng(40.7128, -74.0060); // New York, NY
+
+
   @override
   void initState() {
     // TODO: implement initState
@@ -155,13 +159,18 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                       return null;
 
                     },onTap: ()async{
-                      // Prediction? p = await  authController.showGoogleAutoComplete(context);
-                      //
-                      // /// now let's translate this selected address and convert it to latlng obj
-                      //
-                      // homeAddress = await authController.buildLatLngFromAddress(p!.description!);
-                      // homeController.text = p.description!;
-                      // ///store this information into firebase together once update is clicked
+                      String? selectedAddress = await authController.openGoogleAutoCompleteTextField(context);
+
+                      /// now let's translate this selected address and convert it to latlng obj
+                      print("Selected Address: $selectedAddress");
+
+
+                      if (selectedAddress != null) {
+                        homeController.text = selectedAddress ;
+                        homeAddress = await authController.buildLatLngFromAddress(selectedAddress.toString());
+                        print("Home Address: $homeAddress");
+                      }
+                      ///store this information into firebase together once update is clicked
 
 
 
@@ -179,13 +188,15 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
 
                           return null;
                         },onTap: ()async{
-                          // Prediction? p = await  authController.showGoogleAutoComplete(context);
-                          //
-                          // /// now let's translate this selected address and convert it to latlng obj
-                          //
-                          // businessAddress = await authController.buildLatLngFromAddress(p!.description!);
-                          // businessController.text = p.description!;
-                          // ///store this information into firebase together once update is clicked
+                          String? selectedAdrress = await authController.openGoogleAutoCompleteTextField(context);
+
+                          /// now let's translate this selected address and convert it to latlng obj
+
+                          businessAddress = await authController.buildLatLngFromAddress(selectedAdrress.toString());
+                          if (selectedAdrress != null) {
+                            businessController.text = selectedAdrress;
+                          }
+                          ///store this information into firebase together once update is clicked
 
                         },
                         readOnly: true
@@ -201,13 +212,15 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
 
                           return null;
                         },onTap: ()async{
-                          // Prediction? p = await  authController.showGoogleAutoComplete(context);
-                          //
-                          // /// now let's translate this selected address and convert it to latlng obj
-                          //
-                          // shoppingAddress = await authController.buildLatLngFromAddress(p!.description!);
-                          // shopController.text = p.description!;
-                          // ///store this information into firebase together once update is clicked
+                          String? selectedAddress = await authController.openGoogleAutoCompleteTextField(context);
+
+                          /// now let's translate this selected address and convert it to latlng obj
+
+                          shoppingAddress = await authController.buildLatLngFromAddress(selectedAddress.toString());
+                          if (selectedAddress != null) {
+                            shopController.text = selectedAddress;
+                          }
+                          ///store this information into firebase together once update is clicked
 
                         },readOnly: true),
                     const SizedBox(
@@ -233,9 +246,9 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                           businessController.text,
                           shopController.text,
                            url: authController.myUser.value.image??"",
-                          // homeLatLng: homeAddress,
-                          // shoppingLatLng: shoppingAddress,
-                          // businessLatLng: businessAddress
+                          homeLatLng: homeAddress,
+                          shoppingLatLng: shoppingAddress,
+                          businessLatLng: businessAddress
                       );
                     })),
                   ],
