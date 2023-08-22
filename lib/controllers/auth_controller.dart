@@ -9,6 +9,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:google_places_flutter/google_places_flutter.dart';
 import 'package:google_places_flutter/model/prediction.dart';
 import 'package:jeitak_app/models/user_model.dart';
+import 'package:jeitak_app/utils/colors.dart';
 import 'package:jeitak_app/views/home_page.dart';
 import 'package:jeitak_app/views/profile_setting_screen.dart';
 import 'package:path/path.dart' as Path;
@@ -166,43 +167,71 @@ class AuthController extends GetxController{
     return LatLng(locations.first.latitude, locations.first.longitude);
   }
 
-
   Future<String?> openGoogleAutoCompleteTextField(BuildContext context) async {
     String? selectedLocation = await showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        content: GooglePlaceAutoCompleteTextField(
-          textEditingController: TextEditingController(),
-          googleAPIKey: "AIzaSyAvgoLt-borSsoJ4NTTHFnDjcOLAr84i2k",
-          debounceTime: 800,
-          countries: ["in", "fr"],
-          isLatLngRequired: true,
-          getPlaceDetailWithLatLng: (Prediction prediction) {
-            print("placeDetails " + prediction.lat.toString());
-            print("placeDetails " + prediction.lng.toString());
-          },
-          itemClick: (Prediction prediction) {
-            Navigator.pop(context, prediction.description);
-          },
-          itemBuilder: (context, index, Prediction prediction) {
-            return Container(
-              padding: EdgeInsets.all(10),
-              child: Row(
-                children: [
-                  Icon(Icons.location_on),
-                  SizedBox(width: 7),
-                  Expanded(child: Text("${prediction.description ?? ""}")),
-                ],
-              ),
-            );
-          },
-          isCrossBtnShown: true,
-        ),
-      ),
+      builder: (context) {
+        return Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8.0),
+          ),
+          child: Container(
+            padding: EdgeInsets.all(16.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  "Select Location",
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+                SizedBox(height: 16),
+                GooglePlaceAutoCompleteTextField(
+                  textEditingController: TextEditingController(),
+                  googleAPIKey: "AIzaSyAvgoLt-borSsoJ4NTTHFnDjcOLAr84i2k",
+                  debounceTime: 800,
+                  countries: ["in", "fr"],
+                  isLatLngRequired: true,
+                  getPlaceDetailWithLatLng: (Prediction prediction) {
+                    print("placeDetails " + prediction.lat.toString());
+                    print("placeDetails " + prediction.lng.toString());
+                  },
+                  itemClick: (Prediction prediction) {
+                    Navigator.pop(context, prediction.description);
+                  },
+                  itemBuilder: (context, index, Prediction prediction) {
+                    return Container(
+                      padding: EdgeInsets.all(10),
+                      child: Row(
+                        children: [
+                          Icon(Icons.location_on),
+                          SizedBox(width: 7),
+                          Expanded(child: Text("${prediction.description ?? ""}")),
+                        ],
+                      ),
+                    );
+                  },
+                  isCrossBtnShown: true,
+                ),
+                SizedBox(height: 16),
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.pop(context); // Close the dialog
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.mainColor
+                  ),
+                  child: Text("Cancel"),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
 
     return selectedLocation;
   }
+
 
 
 }

@@ -9,6 +9,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:google_places_flutter/model/prediction.dart';
 import 'package:jeitak_app/controllers/auth_controller.dart';
+import 'package:jeitak_app/controllers/polylyne_handler.dart';
 import 'package:jeitak_app/utils/colors.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:google_places_flutter/google_places_flutter.dart';
@@ -85,7 +86,7 @@ class _HomeScreenState extends State<HomeScreen> {
             child: GoogleMap(
               // mapType: MapType.terrain,
               zoomControlsEnabled: false,
-              polylines: _polyline,
+              polylines: polyline,
               markers: markers,
               onMapCreated: (GoogleMapController controller) {
                 myMapController = controller;
@@ -284,6 +285,53 @@ class _HomeScreenState extends State<HomeScreen> {
       child: Container(
         width: Get.width,
         height: 50,
+        padding: EdgeInsets.only(left: 15),
+        decoration: BoxDecoration(
+            color: Colors.white,
+            boxShadow: [
+              BoxShadow(
+                  color: Colors.black.withOpacity(0.05),
+                  spreadRadius: 4,
+                  blurRadius: 10)
+            ],
+            borderRadius: BorderRadius.circular(8)),
+        child: TextFormField(
+          controller: sourceController,
+          readOnly: true,
+          onTap: () async {
+            buildSourceSheet();
+          },
+          style: GoogleFonts.poppins(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+          ),
+          decoration: InputDecoration(
+            hintText: 'From:',
+            hintStyle: GoogleFonts.poppins(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+            ),
+            suffixIcon: Padding(
+              padding: const EdgeInsets.only(left: 10),
+              child: Icon(
+                Icons.search,
+              ),
+            ),
+            border: InputBorder.none,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget buildTextFieldForNewSource() {
+    return Positioned(
+      top: 230,
+      left: 20,
+      right: 20,
+      child: Container(
+        width: Get.width,
+        height: 50,
         padding: EdgeInsets.only(left: 16.0),
         decoration: BoxDecoration(
             color: Colors.white,
@@ -430,8 +478,8 @@ class _HomeScreenState extends State<HomeScreen> {
               child: Row(
                 children: [
                   Text(
-                    //authController.myUser.value.hAddress!,
-                    'London',
+                    authController.myUser.value.hAddress!,
+                    //'London',
                     style: TextStyle(
                         color: Colors.black,
                         fontSize: 12,
@@ -456,28 +504,38 @@ class _HomeScreenState extends State<HomeScreen> {
           InkWell(
             onTap: () async {
                Get.back();
-              // source = authController.myUser.value.bussinessAddres!;
-              // sourceController.text = authController.myUser.value.bAddress!;
-              //
-              // if (markers.length >= 2) {
-              //   markers.remove(markers.last);
-              // }
-              // markers.add(Marker(
-              //     markerId: MarkerId(authController.myUser.value.bAddress!),
-              //     infoWindow: InfoWindow(
-              //       title: 'Source: ${authController.myUser.value.bAddress!}',
-              //     ),
-              //     position: source));
-              //
-              // await getPolylines(source, destination);
-              //
-              // // drawPolyline(place);
-              //
-              // myMapController!.animateCamera(CameraUpdate.newCameraPosition(
-              //     CameraPosition(target: source, zoom: 14)));
-              // setState(() {});
-              //
-              // buildRideConfirmationSheet();
+              source = authController.myUser.value.bussinessAddres!;
+              sourceController.text = authController.myUser.value.bAddress!;
+
+              if (markers.length >= 2) {
+                markers.remove(markers.last);
+              }
+              markers.add(Marker(
+                  markerId: MarkerId(authController.myUser.value.bAddress!),
+                  infoWindow: InfoWindow(
+                    title: 'Source: ${authController.myUser.value.bAddress!}',
+                  ),
+                  position: source));
+
+              await getPolylines(source, destination);
+              print('');
+              print('');
+              print('');
+              print('');
+              print(source);
+               print('');
+               print('');
+               print('');
+               print('');
+              print(destination);
+
+              // drawPolyline(place);
+
+              myMapController!.animateCamera(CameraUpdate.newCameraPosition(
+                  CameraPosition(target: source, zoom: 14)));
+              setState(() {});
+
+              //buildRideConfirmationSheet();
             },
             child: Container(
               width: Get.width,
@@ -495,8 +553,8 @@ class _HomeScreenState extends State<HomeScreen> {
               child: Row(
                 children: [
                   Text(
-                    //authController.myUser.value.bAddress!,
-                    'New York',
+                    authController.myUser.value.bAddress!,
+                    // 'New York',
                     style: TextStyle(
                         color: Colors.black,
                         fontSize: 12,
