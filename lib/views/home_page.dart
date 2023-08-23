@@ -15,6 +15,7 @@ import 'package:flutter/services.dart' show rootBundle;
 import 'package:google_places_flutter/google_places_flutter.dart';
 import 'package:jeitak_app/views/my_profile_screen.dart';
 import 'package:geocoding/geocoding.dart' as geoCoding;
+import 'package:jeitak_app/views/payment_screen.dart';
 import 'dart:ui' as ui;
 
 import 'package:jeitak_app/widgets/text_widget.dart';
@@ -78,19 +79,23 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // appBar: AppBar(
-      //   actions: [
-      //     IconButton(
-      //         onPressed: signOutUser,
-      //         icon: Icon(Icons.logout)
-      //     )
-      //   ],
-      // ),
+      appBar: AppBar(
+        actions: [
+          IconButton(
+              onPressed: signOutUser,
+              icon: Icon(Icons.logout)
+          )
+        ],
+        title: Text('Logged in as ' + user.email!),
+        backgroundColor: AppColors.mainColor
+        ,
+        elevation: 0,
+      ),
       drawer: buildDrawer(),
       body: Stack(
         children: [
           Positioned(
-            top: 150.0,
+            top: 0.0,
             left: 0,
             right: 0,
             bottom: 0,
@@ -107,7 +112,6 @@ class _HomeScreenState extends State<HomeScreen> {
               initialCameraPosition: _kGooglePlex,
             ),
           ),
-
           buildProfileTile(),
 
           buildTextField(),
@@ -140,7 +144,7 @@ class _HomeScreenState extends State<HomeScreen> {
           :
       Container(
         width: Get.width,
-        height: Get.width * 0.5,
+        //height: Get.width * 0.5,
         padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
         decoration: BoxDecoration(color: Colors.white70),
         child: Row(
@@ -174,7 +178,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 RichText(
                   text: TextSpan(children: [
                     TextSpan(
-                        text: 'Good Morning, ',
+                        text: 'Good day, ',
                         style:
                         TextStyle(color: Colors.black, fontSize: 14)),
                     TextSpan(
@@ -207,132 +211,159 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget buildTextField() {
     return Positioned(
-      top: 170.0,
+      top: 100.0,
       left: 20,
       right: 20,
-      child: Container(
-        width: Get.width,
-        height: 50,
-        padding: EdgeInsets.only(left: 16.0),
-        decoration: BoxDecoration(
-            color: Colors.white,
-            boxShadow: [
-              BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
-                  spreadRadius: 4,
-                  blurRadius: 1)
-            ],
-            borderRadius: BorderRadius.circular(8)),
-        child: GooglePlaceAutoCompleteTextField(
-          textEditingController: controller,
-          googleAPIKey: "AIzaSyAvgoLt-borSsoJ4NTTHFnDjcOLAr84i2k",
-          debounceTime: 800,
-          countries: ["in", "fr", "sa", "lk"],
-          isLatLngRequired: true,
-          getPlaceDetailWithLatLng: (Prediction prediction) {
-            print("placeDetails " + prediction.lng.toString());
-            setState(() {
-              showSourceField = true;
-            });
-          },
-          itemClick: (Prediction prediction) async {
-            controller.text = prediction.description ?? "";
-            controller.selection = TextSelection.fromPosition(
-              TextPosition(offset: prediction.description!.length),
-            );
-
-            //  String selectedPlace = p!.description!;
-            // //
-            // geoCoding.Location selectedPlace = controller.text;
-
-            List<geoCoding.Location> locations =
-            await geoCoding.locationFromAddress(controller.text);
-
-            destination =
-                LatLng(locations.first.latitude, locations.first.longitude);
-
-            markers.add(Marker(
-              markerId: MarkerId(controller.text),
-              infoWindow: InfoWindow(
-                title: 'Destination: $controller.text',
-              ),
-              position: destination,
-              icon: BitmapDescriptor.fromBytes(markIcons),
-            ));
-
-            myMapController!.animateCamera(CameraUpdate.newCameraPosition(
-                CameraPosition(target: destination, zoom: 14)
-              //17 is new zoom level
-            ));
-
-
-            setState(() {
-              showSourceField = true;
-            });
-          },
-          itemBuilder: (context, index, Prediction prediction) {
-            return Container(
-              padding: EdgeInsets.all(10),
-              child: Row(
-                children: [
-                  Icon(Icons.location_on),
-                  SizedBox(
-                    width: 7,
-                  ),
-                  Expanded(child: Text("${prediction.description ?? ""}")),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+              'Search a location',
+            style: TextStyle(
+              color: Colors.black87,
+              fontWeight: FontWeight.bold
+            ),
+          ),
+          Container(
+            width: Get.width,
+            height: 60,
+            padding: EdgeInsets.only(left: 0.0),
+            decoration: BoxDecoration(
+                color: Colors.white,
+                boxShadow: [
+                  BoxShadow(
+                      color: Colors.black.withOpacity(0.05),
+                      spreadRadius: 4,
+                      blurRadius: 1)
                 ],
+                borderRadius: BorderRadius.circular(8)),
+            child: GestureDetector(
+              onTap: (){},
+              child: GooglePlaceAutoCompleteTextField(
+                textEditingController: controller,
+                googleAPIKey: "AIzaSyAvgoLt-borSsoJ4NTTHFnDjcOLAr84i2k",
+                debounceTime: 800,
+                countries: ["in", "fr", "lk", "us", "sa"],
+                isLatLngRequired: true,
+                getPlaceDetailWithLatLng: (Prediction prediction) {
+                  print("placeDetails " + prediction.lng.toString());
+                  setState(() {
+                    showSourceField = true;
+                  });
+                },
+                itemClick: (Prediction prediction) async {
+                  controller.text = prediction.description ?? "";
+                  controller.selection = TextSelection.fromPosition(
+                    TextPosition(offset: prediction.description!.length),
+                  );
+
+                  //  String selectedPlace = p!.description!;
+                  // //
+                  // geoCoding.Location selectedPlace = controller.text;
+
+                  List<geoCoding.Location> locations =
+                  await geoCoding.locationFromAddress(controller.text);
+
+                  destination =
+                      LatLng(locations.first.latitude, locations.first.longitude);
+
+                  markers.add(Marker(
+                    markerId: MarkerId(controller.text),
+                    infoWindow: InfoWindow(
+                      title: 'Destination: $controller.text',
+                    ),
+                    position: destination,
+                    icon: BitmapDescriptor.fromBytes(markIcons),
+                  ));
+
+                  myMapController!.animateCamera(CameraUpdate.newCameraPosition(
+                      CameraPosition(target: destination, zoom: 14)
+                    //17 is new zoom level
+                  ));
+
+
+                  setState(() {
+                    showSourceField = true;
+                  });
+                },
+                itemBuilder: (context, index, Prediction prediction) {
+                  return Container(
+                    padding: EdgeInsets.all(10),
+                    child: Row(
+                      children: [
+                        Icon(Icons.location_on),
+                        SizedBox(
+                          width: 7,
+                        ),
+                        Expanded(child: Text("${prediction.description ?? ""}")),
+                      ],
+                    ),
+                  );
+                },
+                isCrossBtnShown: true,
               ),
-            );
-          },
-          isCrossBtnShown: true,
-        ),
+            ),
+          ),
+        ],
       ),
     );
   }
 
   Widget buildTextFieldForSource() {
     return Positioned(
-      top: 230,
+      top: 200.0,
       left: 20,
       right: 20,
-      child: Container(
-        width: Get.width,
-        height: 50,
-        padding: EdgeInsets.only(left: 15),
-        decoration: BoxDecoration(
-            color: Colors.white,
-            boxShadow: [
-              BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
-                  spreadRadius: 4,
-                  blurRadius: 10)
-            ],
-            borderRadius: BorderRadius.circular(8)),
-        child: TextFormField(
-          controller: sourceController,
-          readOnly: true,
-          onTap: () async {
-            buildSourceSheet();
-          },
-          style: GoogleFonts.poppins(
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-          ),
-          decoration: InputDecoration(
-            hintText: 'From:',
-            hintStyle: GoogleFonts.poppins(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Location to start',
+            style: TextStyle(
+                color: Colors.black87,
+                fontWeight: FontWeight.bold
             ),
-            suffixIcon: Padding(
-              padding: const EdgeInsets.only(left: 10),
-              child: Icon(
-                Icons.search,
+          ),
+          Container(
+            width: Get.width,
+            height: 50,
+            padding: EdgeInsets.only(left: 15),
+            decoration: BoxDecoration(
+                color: Colors.white,
+                boxShadow: [
+                  BoxShadow(
+                      color: Colors.black.withOpacity(0.05),
+                      spreadRadius: 4,
+                      blurRadius: 10)
+                ],
+                borderRadius: BorderRadius.circular(8)),
+            child: TextFormField(
+              controller: sourceController,
+              readOnly: true,
+              onTap: () async {
+                buildSourceSheet();
+              },
+              style: GoogleFonts.poppins(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+              ),
+              decoration: InputDecoration(
+                hintText: 'From:',
+                hintStyle: GoogleFonts.poppins(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
+                suffixIcon: Padding(
+                  padding: const EdgeInsets.only(left: 10),
+                  child: Icon(
+                    Icons.search,
+                  ),
+                ),
+                border: InputBorder.none,
               ),
             ),
-            border: InputBorder.none,
           ),
-        ),
+        ],
       ),
     );
   }
@@ -649,7 +680,39 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           InkWell(
             onTap: () async {
-              showGoogleAutoComplete();
+              Get.back();
+              source = authController.myUser.value.homeAddress!;
+              sourceController.text = authController.myUser.value.hAddress!;
+
+              if (markers.length >= 2) {
+                markers.remove(markers.last);
+              }
+              markers.add(Marker(
+                  markerId: MarkerId(authController.myUser.value.hAddress!),
+                  infoWindow: InfoWindow(
+                    title: 'Source: ${authController.myUser.value.hAddress!}',
+                  ),
+                  position: source));
+
+              await getPolylines(source, destination);
+              print('');
+              print('');
+              print('');
+              print('');
+              print(source);
+              print('');
+              print('');
+              print('');
+              print('');
+              print(destination);
+
+              // drawPolyline(place);
+
+              myMapController!.animateCamera(CameraUpdate.newCameraPosition(
+                  CameraPosition(target: source, zoom: 14)));
+              setState(() {});
+
+              buildRideConfirmationSheet();
             },
             child: Container(
               width: Get.width,
@@ -761,8 +824,39 @@ class _HomeScreenState extends State<HomeScreen> {
           InkWell(
             onTap: () async {
               Get.back();
-              final selectedLocation = await showGoogleAutoComplete();
-              fromController.text = selectedLocation.toString();
+              String? location = await authController.openGoogleAutoCompleteTextField(context);
+              source = await authController.buildLatLngFromAddress(location.toString());
+              sourceController.text = location.toString();
+
+              if (markers.length >= 2) {
+                markers.remove(markers.last);
+              }
+              markers.add(Marker(
+                  markerId: MarkerId(sourceController.text),
+                  infoWindow: InfoWindow(
+                    title: 'Source: ${sourceController.text}',
+                  ),
+                  position: source));
+
+              await getPolylines(source, destination);
+              print('');
+              print('');
+              print('');
+              print('');
+              print(source);
+              print('');
+              print('');
+              print('');
+              print('');
+              print(destination);
+
+              // drawPolyline(place);
+
+              myMapController!.animateCamera(CameraUpdate.newCameraPosition(
+                  CameraPosition(target: source, zoom: 14)));
+              setState(() {});
+
+              buildRideConfirmationSheet();
             },
             child: Container(
               width: Get.width,
@@ -1023,8 +1117,10 @@ class _HomeScreenState extends State<HomeScreen> {
             padding: EdgeInsets.symmetric(horizontal: 30),
             child: Column(
               children: [
-                buildDrawerItem(title: 'Payment History', onPressed: () => () {}
-                    //Get.to(()=> PaymentScreen())
+                buildDrawerItem(title: 'Payment History', onPressed: ()  {
+                  Get.to(()=> PaymentScreen());
+    }
+
                 ),
                 buildDrawerItem(
                     title: 'Ride History', onPressed: () {}, isVisible: true),

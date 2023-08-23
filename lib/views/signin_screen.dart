@@ -1,5 +1,9 @@
+import 'dart:math';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
+import 'package:jeitak_app/services/auth_service.dart';
 import 'package:jeitak_app/utils/colors.dart';
 import 'package:jeitak_app/utils/constants.dart';
 import 'package:jeitak_app/views/home_page.dart';
@@ -20,8 +24,14 @@ class SignInScreen extends StatefulWidget {
 }
 
 class _SignInScreenState extends State<SignInScreen> {
+
   final _emailControlller = TextEditingController();
   final _passwordControlller = TextEditingController();
+  String welcome = '';
+
+
+  AuthService authService = AuthService();
+
 
   void signUserIn() async{
 
@@ -44,46 +54,147 @@ class _SignInScreenState extends State<SignInScreen> {
           password: _passwordControlller.text
       );
       Navigator.pop(context);
+      Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+              builder: (context)=>HomeScreen()
+          )
+      );
 
     }on FirebaseAuthException catch(e){
-      if(e.code == 'user-not-found'){
-        showDialog(
-            context: context,
-            builder: (context){
-              Navigator.pop(context);
-              return AlertDialog(
-                title: Text('Please check your password'),
-              );
-            }
-        );
+      Navigator.pop(context);
+      print('Failed with error code: ${e.code}');
+      print(e.message);
+      handleSignInError(e);
 
-      } else if(e.code == 'wrong-password'){
-        Navigator.pop(context);
-        showDialog(
-            context: context,
-            builder: (context){
-              return AlertDialog(
-                title: Text('Please check your rmail address'),
-              );
-            }
-        );
-      } else{
-        Navigator.pop(context);
-        showDialog(
-            context: context,
-            builder: (context){
-              return AlertDialog(
-                title: Text('Please try again'),
-              );
-            }
-        );
-      }
+    }
+  }
+
+  void handleSignInError(FirebaseAuthException e) {
+    String errorMessage = '';
+
+    if (e.code == 'user-not-found') {
+      errorMessage = 'User not found. Please check your email.';
+      showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: Text('Login Error'),
+            content: Text(errorMessage),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: Text('OK'),
+              ),
+            ],
+          );
+        },
+      );
+    } else if (e.code == 'wrong-password') {
+      errorMessage = 'Wrong password. Please check your password.';
+      showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: Text('Login Error'),
+            content: Text(errorMessage),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: Text('OK'),
+              ),
+            ],
+          );
+        },
+      );
+    } else if (e.code == 'The password is invalid or the user does not have a password.') {
+      errorMessage = 'The password is invalid or the user does not have a password.';
+      showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: Text('Login Error'),
+            content: Text(errorMessage),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: Text('OK'),
+              ),
+            ],
+          );
+        },
+      );
+    } else {
+      errorMessage = 'An error occurred. Please try again.';
+      showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: Text('Login Error'),
+            content: Text(errorMessage),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: Text('OK'),
+              ),
+            ],
+          );
+        },
+      );
     }
 
-
-
-
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text('Login Error'),
+          content: Text(''),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: Text('OK'),
+            ),
+          ],
+        );
+      },
+    );
   }
+
+  Map<String, dynamic>? _userData;
+
+  Future<UserCredential> signInFacebook() async{
+    final LoginResult result = await FacebookAuth.instance.login(
+        permissions: ['email']
+    );
+    if (result.status == LoginStatus.success) {
+      // you are logged
+      final AccessToken accessToken = result.accessToken!;
+      final userData = await FacebookAuth.instance.getUserData();
+      _userData = userData;
+    } else {
+      print(result.status);
+      print(result.message);
+    }
+
+    setState(() {
+      welcome = _userData!['email'];
+    });
+
+    final OAuthCredential credential = FacebookAuthProvider.credential(result.accessToken!.token);
+    return await FirebaseAuth.instance.signInWithCredential(credential);
+  }
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -196,7 +307,17 @@ class _SignInScreenState extends State<SignInScreen> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    Tab(icon: Image.asset("assets/facebook.png", width: 26.0,),),
+                    Tab(
+
+                      icon: GestureDetector(
+                        onTap: (){
+                          authService.signInWithGoogle(context: context);
+                        },
+                          child: Image.asset(
+                        "assets/facebook.png", width: 26.0,
+                          )
+                      ),
+                    ),
                     //Tab(icon: Image.asset("assets/images/twitter.png")),
                     //Tab(icon: Image.asset("assets/images/github.png")),
                   ],

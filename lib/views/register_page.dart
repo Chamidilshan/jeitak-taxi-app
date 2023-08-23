@@ -1,6 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:jeitak_app/utils/colors.dart';
+import 'package:jeitak_app/views/my_profile_screen.dart';
+import 'package:jeitak_app/views/profile_setting_screen.dart';
 import 'package:jeitak_app/widgets/custom_radio.dart';
 import 'package:jeitak_app/widgets/gender_card.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
@@ -46,6 +48,16 @@ class _RegisterPageState extends State<RegisterPage> {
             email: _emailControlller.text,
             password: _passwordControlller.text
         );
+        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>MyProfileScreen())
+        );
+        print('');
+        print('');
+        print('');
+        print('');
+        print('');
+        print('');
+
+
       } else{
         showDialog(
             context: context,
@@ -57,7 +69,6 @@ class _RegisterPageState extends State<RegisterPage> {
             }
         );
       }
-      Navigator.pop(context);
 
     }on FirebaseAuthException catch(e){
       if(e.code == 'user-not-found'){
@@ -151,7 +162,7 @@ class _RegisterPageState extends State<RegisterPage> {
                       ),),
                       SizedBox(height: 5,),
                       TextField(
-                        obscureText: true,
+                        obscureText: false,
                         controller: _fullNameControlller,
                         decoration: InputDecoration(
                           contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 10),

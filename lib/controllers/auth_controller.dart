@@ -12,6 +12,7 @@ import 'package:jeitak_app/models/user_model.dart';
 import 'package:jeitak_app/utils/colors.dart';
 import 'package:jeitak_app/views/home_page.dart';
 import 'package:jeitak_app/views/profile_setting_screen.dart';
+import 'package:jeitak_app/views/signin_screen.dart';
 import 'package:path/path.dart' as Path;
 import 'package:geocoding/geocoding.dart' as geoCoding;
 
@@ -61,7 +62,7 @@ class AuthController extends GetxController{
           if (value.exists) {
             Get.offAll(() => HomeScreen());
           } else {
-            Get.offAll(() => ProfileScreen());
+            Get.offAll(() => SignInScreen(onTap: (){}));
           }
         //}
 
@@ -189,7 +190,7 @@ class AuthController extends GetxController{
                   textEditingController: TextEditingController(),
                   googleAPIKey: "AIzaSyAvgoLt-borSsoJ4NTTHFnDjcOLAr84i2k",
                   debounceTime: 800,
-                  countries: ["in", "fr"],
+                  countries: ["in", "fr", "lk", "us", "sa"],
                   isLatLngRequired: true,
                   getPlaceDetailWithLatLng: (Prediction prediction) {
                     print("placeDetails " + prediction.lat.toString());

@@ -28,13 +28,13 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     AuthController authController = Get.put(AuthController());
-    authController.decideRoute();
+   // authController.decideRoute();
     final textTheme = Theme.of(context).textTheme;
     return GetMaterialApp(
       title: 'Jeitak',
       debugShowCheckedModeBanner: false ,
       theme: ThemeData(
-        textTheme: GoogleFonts.poppinsTextTheme(textTheme)
+        //textTheme: GoogleFonts.poppinsTextTheme(textTheme)
       ),
       home: AuthPage(),
     );
