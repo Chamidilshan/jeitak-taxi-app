@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:jeitak_app/views/login_screen.dart';
 import 'package:jeitak_app/views/register_page.dart';
 import 'package:jeitak_app/views/signin_screen.dart';
 
@@ -22,8 +23,8 @@ class _LoginOrRegisterPageState extends State<LoginOrRegisterPage> {
   @override
   Widget build(BuildContext context) {
     if (showLoginPage){
-      return SignInScreen(
-        onTap: togglePages,
+      return LoginScreen(
+       // onTap: togglePages,
       );
     } else{
       return RegisterPage(

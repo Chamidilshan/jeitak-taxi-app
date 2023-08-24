@@ -5,9 +5,11 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:jeitak_app/utils/colors.dart';
 import 'package:jeitak_app/utils/constants.dart';
 import 'package:jeitak_app/views/otp_verification_screen.dart';
+import 'package:jeitak_app/views/signin_screen.dart';
 import 'package:jeitak_app/widgets/text_widget.dart';
+import 'package:sign_button/sign_button.dart';
 
-Widget loginWidget(CountryCode countryCode, Function onCountryChange,Function onSubmit) {
+Widget loginWidget(CountryCode countryCode, Function onCountryChange,Function onSubmit, BuildContext context) {
   bool isTextFieldNotEmpty = false;
   return Padding(
     padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -115,6 +117,31 @@ Widget loginWidget(CountryCode countryCode, Function onCountryChange,Function on
         ),
         const SizedBox(
           height: 10,
+        ),
+        Center(
+          child: SignInButton(
+              buttonType: ButtonType.googleDark,
+              btnColor: AppColors.mainColor,
+              onPressed: () {
+                print('click');
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context)=> SignInScreen(
+                        onTap: (){})
+                    )
+                );
+              }),
+        ),
+        Center(
+          child: SignInButton(
+            btnColor: AppColors.mainColor,
+              buttonType: ButtonType.facebookDark,
+              onPressed: () {
+                print('click');
+              }),
+        ),
+        SizedBox(
+          height: 20.0,
         ),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20),
